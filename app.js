@@ -6,7 +6,16 @@ app.use(express.json());
 let sessions = [];
 let currentSession = null;
 
-// Start Work
+/* =========================
+   Root Route
+========================= */
+app.get("/", (req, res) => {
+  res.send("Salary App is Running 🚀");
+});
+
+/* =========================
+   Start Work
+========================= */
 app.post("/start", (req, res) => {
   if (currentSession) {
     return res.json({ message: "Work already started" });
@@ -17,10 +26,15 @@ app.post("/start", (req, res) => {
     end: null
   };
 
-  res.json({ message: "Work started", time: currentSession.start });
+  res.json({
+    message: "Work started",
+    time: currentSession.start
+  });
 });
 
-// End Work
+/* =========================
+   End Work
+========================= */
 app.post("/end", (req, res) => {
   if (!currentSession) {
     return res.json({ message: "No active session" });
@@ -42,7 +56,9 @@ app.post("/end", (req, res) => {
   });
 });
 
-// Monthly Report
+/* =========================
+   Monthly Report
+========================= */
 app.get("/report", (req, res) => {
   const totalHours = sessions.reduce(
     (sum, s) => sum + s.hours,
@@ -55,9 +71,17 @@ app.get("/report", (req, res) => {
   });
 });
 
-// Salary Calculation
+/* =========================
+   Salary Calculation
+========================= */
 app.post("/salary", (req, res) => {
   const { hourlyRate } = req.body;
+
+  if (!hourlyRate) {
+    return res.status(400).json({
+      error: "hourlyRate is required"
+    });
+  }
 
   const totalHours = sessions.reduce(
     (sum, s) => sum + s.hours,
@@ -84,6 +108,9 @@ app.post("/salary", (req, res) => {
   });
 });
 
+/* =========================
+   Start Server
+========================= */
 app.listen(3000, () => {
   console.log("Time Tracking API running on port 3000");
 });
